@@ -36,7 +36,6 @@ def image_coordinates(image_path):
     print(coords)
     return {
         "path": image_path,
-        "time": img.datetime_original,
         "lat": coords[0],
         "lng": coords[1],
     }
