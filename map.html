@@ -155,11 +155,7 @@
                 const img = `<img src="https://skyscopephotos.s3.ca-central-1.amazonaws.com/SkyScopePhotos/${url}" style="width:100%;">`
                 new mapboxgl.Popup()
                     .setLngLat(coordinates)
-                    .setHTML(
-                        `
-                            ${img}        
-                        `
-                    )
+                    .setHTML(`${img}`)
                     .addTo(map);
             });
             map.on('mouseenter', 'unclustered-point', () => {
