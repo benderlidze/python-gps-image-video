@@ -29,13 +29,43 @@
             bottom: 0;
             width: 100%;
         }
+
+        .mapboxgl-popup {
+            max-width: 400px !important;
+        }
+
+        #switchers {
+            position: absolute;
+            background-color: white;
+            left: 10px;
+            z-index: 20000;
+            top: 10px;
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 10px;
+        }
+
+        #switchers div {
+            margin: 5px;
+        }
     </style>
 </head>
 
 <body>
+
+    <div id="switchers"></div>
     <div id="map"></div>
 
     <script>
+
+        const switchers = document.getElementById("switchers")
+
+        switchers.append(buildSwitcher("Satellite", checked => {
+            const display = checked ? "visible" : "none"
+            map.setLayoutProperty('satellite', 'visibility', display);
+        }, false).div)
+
+
         mapboxgl.accessToken = 'pk.eyJ1Ijoic2VyZ2JlciIsImEiOiJja3dwOWgzeGQwYWdyMm9xb2pkMDFvYmNuIn0.H9AJ_NLmDNYMed6dvu_Q0A';
         const map = new mapboxgl.Map({
             container: 'map',
@@ -53,6 +83,15 @@
         );
 
         map.on('load', () => {
+
+            map.addLayer({
+                id: 'satellite',
+                source: { "type": "raster", "url": "mapbox://mapbox.satellite", "tileSize": 256 },
+                type: "raster",
+                layout: {
+                    visibility: 'none'
+                }
+            });
 
             fetch("data.json")
                 .then(data => data.json())
@@ -171,7 +210,9 @@
                     <div><a href="${link}" target="_blank">${url}</a></div>
                     <img src="${link}" style="width:100%;">
                 `
-                new mapboxgl.Popup()
+                new mapboxgl.Popup({
+                    className: "popup"
+                })
                     .setLngLat(coordinates)
                     .setHTML(`${img}`)
                     .addTo(map);
@@ -189,6 +230,39 @@
                 map.getCanvas().style.cursor = '';
             });
         });
+
+
+        function buildSwitcher(labelText, action, checked = true) {
+
+            const div = document.createElement("div")
+            div.className = "switcher-div"
+
+            const label = document.createElement("label")
+            label.className = "switch"
+
+            const checkbox = document.createElement("input")
+            checkbox.type = "checkbox"
+            checkbox.checked = checked
+            checkbox.addEventListener("input", () => {
+                if (typeof action === "function") {
+                    action(checkbox.checked)
+                }
+            })
+
+            const span = document.createElement("span")
+            span.className = "slider round"
+
+            const text = document.createElement("span")
+            text.innerText = labelText
+
+            label.appendChild(checkbox)
+            label.appendChild(span)
+
+            div.appendChild(label)
+            div.appendChild(text)
+
+            return { div, checkbox }
+        }
     </script>
 </body>
 
