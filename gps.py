@@ -22,7 +22,8 @@ def image_coordinates(image_path):
         try:
             img = Image(src)
         except:
-            print("ERROR!!!",image_path)
+            print("ERROR!!!", image_path)
+            return {"path": image_path}
 
     if img.has_exif:
         try:
