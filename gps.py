@@ -18,7 +18,12 @@ def decimal_coords(coords, ref):
 def image_coordinates(image_path):
 
     with open(image_path, "rb") as src:
-        img = Image(src)
+
+        try:
+            img = Image(src)
+        except:
+            print("ERROR!!!",image_path)
+
     if img.has_exif:
         try:
             img.gps_longitude
@@ -27,10 +32,10 @@ def image_coordinates(image_path):
                 decimal_coords(img.gps_longitude, img.gps_longitude_ref),
             )
         except AttributeError:
-            print("No Coordinates")
+            print("No Coordinates", image_path)
             return {"path": image_path}
     else:
-        print("The Image has no EXIF information")
+        print("The Image has no EXIF information", image_path)
         return {"path": image_path}
 
     print(coords)
@@ -44,10 +49,8 @@ def image_coordinates(image_path):
 for currentpath, folders, files in os.walk("."):
     for file in files:
         if file.lower().endswith((".jpg", ".jpeg")):
-
             fileName = os.path.join(currentpath, file)
             data = image_coordinates(fileName)
-            # print(data)
             allFiles.append(data)
 
 with open("data.json", "w") as f:
