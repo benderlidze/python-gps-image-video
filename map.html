@@ -9,6 +9,14 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
+    <!-- Load the `mapbox-gl-geocoder` plugin. -->
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css"
+        type="text/css">
+
+
     <style>
         body {
             margin: 0;
@@ -36,6 +44,13 @@
             center: { lng: -124.88515308185697, lat: 49.28658450019111 },
             zoom: 6
         });
+        // Add the control to the map.
+        map.addControl(
+            new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+            })
+        );
 
         map.on('load', () => {
 
@@ -150,9 +165,12 @@
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                 }
 
-                console.log('props', props);
                 const url = props.url.replace(".\\", "")
-                const img = `<img src="https://skyscopephotos.s3.ca-central-1.amazonaws.com/SkyScopePhotos/${url}" style="width:100%;">`
+                const link = `https://skyscopephotos.s3.ca-central-1.amazonaws.com/SkyScopePhotos/${url}`
+                const img = `
+                    <div><a href="${link}" target="_blank">${url}</a></div>
+                    <img src="${link}" style="width:100%;">
+                `
                 new mapboxgl.Popup()
                     .setLngLat(coordinates)
                     .setHTML(`${img}`)
